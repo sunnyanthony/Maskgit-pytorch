@@ -131,6 +131,26 @@ The model demonstrates good capabilities in inpainting ImageNet-generated images
 
 You can download the pretrained MaskGIT models in [hugging face](https://huggingface.co/llvictorll/Maskgit-pytorch/tree/main).
 
+### Pretrained extension
+
+You can find inspiration in the `colab_demo.ipynb`. We utilize a pretrained model based on ImageNet and incorporate a new label into the network. The model employs a different dataset, like CIFAR10, to train this new label through a limited number of iterations per epoch, producing a captivating image. This fine-tuning process facilitates few-shot learning for images with the new label.    
+The hack method is as follows
+```python
+# Initialize the token embedding with an extended dimension for new labels
+token_embedding = nn.Embedding(original_label_dim + new_label_num, network_hid_dim).to(device)
+token_embedding.weight.data.zero_()
+token_embedding.weight.data[:original_label_dim] = maskgit.vit.token_embedding.weight.data
+
+# Create and initialize the bias with a new dimension
+bias = torch.randn(bias_dim, original_label_dim + new_label_num).to(device)
+bias[:, :original_label_dim] = maskgit.vit.bias
+
+# Update the model's token embedding and bias
+maskgit.vit.token_embedding = token_embedding
+maskgit.vit.bias = nn.Parameter(bias).to(device)
+
+```
+
 ## Contribute
 
 The reproduction process might encounter bugs or issues, or there could be mistakes on my part. If you're interested in collaborating or have suggestions, please feel free to reach out (by [creating an issue](https://github.com/valeoai/MaskGIT-pytorch/issues/new)). Your input and collaboration are highly valued!
