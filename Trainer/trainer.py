@@ -40,20 +40,23 @@ class Trainer(object):
 
     def get_data(self):
         """ class to load data """
+        datapath = getattr(self.args, "data_folder", None)
         if self.args.data == "mnist":
-            data_train = MNIST('./Dataset/mnist', download=False,
+            datapath = './Dataset/mnist' if datapath is None else datapath
+            data_train = MNIST(datapath, download=False,
                                transform=transforms.Compose([transforms.Resize(self.args.img_size),
                                                              transforms.ToTensor(),
                                                              ]))
         elif self.args.data == "cifar10":
-            data_train = CIFAR10('/Dataset/CIFAR10/', train=True, download=False,
+            datapath = './Dataset/CIFAR10' if datapath is None else datapath
+            data_train = CIFAR10(datapath, train=True, download=False,
                                  transform=transforms.Compose([
                                            transforms.Resize(self.args.img_size),
                                            transforms.RandomHorizontalFlip(),
                                            transforms.ToTensor(),
                                            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
                                  ]))
-            data_test = CIFAR10('/Dataset/CIFAR10/', train=False, download=False,
+            data_test = CIFAR10(datapath, train=False, download=False,
                                 transform=transforms.Compose([
                                     transforms.Resize(self.args.img_size),
                                     transforms.ToTensor(),
@@ -61,14 +64,15 @@ class Trainer(object):
                                 ]))
 
         elif self.args.data == "stl10":
-            data_train = STL10('./Dataset/stl10', split="train+unlabeled",
+            datapath = './Dataset/stl10' if datapath is None else datapath
+            data_train = STL10(datapath, split="train+unlabeled",
                                transform=transforms.Compose([
                                    transforms.Resize(self.args.img_size),
                                    transforms.RandomHorizontalFlip(),
                                    transforms.ToTensor(),
                                    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
                                ]))
-            data_test = STL10('./Dataset/stl10', split="test",
+            data_test = STL10(datapath, split="test",
                               transform=transforms.Compose([
                                   transforms.Resize(self.args.img_size),
                                   transforms.ToTensor(),
